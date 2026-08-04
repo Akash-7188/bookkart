@@ -173,6 +173,9 @@ export default function Home() {
   const [authError, setAuthError] = useState<string | null>(null);
   const [authSubmitting, setAuthSubmitting] = useState(false);
   const [pendingListAfterAuth, setPendingListAfterAuth] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedType, setSelectedType] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
     const {
@@ -385,6 +388,22 @@ export default function Home() {
       setMessages((prev) => [...prev, { from: "bot", text: reply }]);
     }, 400);
   }
+  const filteredListings = listings.filter((item) => {
+    const matchesSearch =
+      item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.category?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.description?.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesType =
+      selectedType === "All" ||
+      item.listing_type?.toLowerCase() === selectedType.toLowerCase();
+
+    const matchesCategory =
+      selectedCategory === "All" ||
+      item.category?.toLowerCase() === selectedCategory.toLowerCase();
+
+    return matchesSearch && matchesType && matchesCategory;
+  });
 
   return (
     <div className="min-h-full bg-slate-50 text-slate-900">
@@ -425,6 +444,8 @@ export default function Home() {
                 id="search-query"
                 type="search"
                 placeholder={`Search ${filter.toLowerCase()}…`}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="min-w-0 flex-1 bg-transparent px-3 py-2.5 text-sm outline-none placeholder:text-slate-400"
               />
               <button
@@ -627,7 +648,7 @@ export default function Home() {
             </p>
           ) : (
           <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {listings.map((item) => (
+            {filteredListings.map((item) => (
               <li key={item.id}>
                 <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-emerald-200 hover:shadow-md">
                   <div
