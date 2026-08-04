@@ -61,9 +61,12 @@ type Listing = {
   category: string;
   condition: string;
   tag: ListingTag;
-  price: string;
+  price: string | number;
   sellerType: SellerType;
   imageAccent: string;
+  description?: string;
+  listing_type?: string;
+  [key: string]: any; // Allows dynamic access to additional database fields
 };
 
 type DbListing = {
